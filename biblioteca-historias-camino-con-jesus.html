@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Biblioteca de Historias Bíblicas</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:linear-gradient(#dff1ff,#fff);padding:15px}
+.container{max-width:800px;margin:auto}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 15px rgba(0,0,0,.12)}
+h1,h2{text-align:center;color:#2d72e8}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.storyBtn{background:#fff;border:2px solid #cfe3ff;border-radius:14px;padding:15px;cursor:pointer}
+.storyBtn.done{border-color:#3bb273}
+.progress{height:12px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin:10px 0}
+.bar{height:100%;width:0;background:#2d72e8}
+button{background:#2d72e8;color:#fff;border:none;padding:10px 14px;border-radius:10px}
+.nav{display:flex;justify-content:space-between;margin-top:15px}
+.option{background:#f3f4f6;padding:12px;border-radius:10px;margin:8px 0;cursor:pointer}
+#storyView,#quizView{display:none}
+.confetti{position:fixed;width:8px;height:8px;top:-10px;animation:fall 3s linear forwards}
+@keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div id="menu" class="card">
+<h1>📚 Historias Bíblicas</h1>
+<p style="text-align:center">⭐ Estrellas: <span id="stars">0</span></p>
+<div id="stories" class="grid"></div>
+</div>
+
+<div id="storyView" class="card">
+<div class="progress"><div class="bar" id="bar"></div></div>
+<h2 id="storyTitle"></h2>
+<div style="font-size:70px;text-align:center" id="emoji"></div>
+<p id="storyText"></p>
+<div class="nav">
+<button onclick="prevCard()">⬅️ Anterior</button>
+<button onclick="nextCard()">Siguiente ➡️</button>
+</div>
+</div>
+
+<div id="quizView" class="card">
+<h2>🎯 Pregunta Final</h2>
+<p id="quizQuestion"></p>
+<div id="quizOptions"></div>
+<p id="quizResult"></p>
+</div>
+
+</div>
+
+<script>
+const stories=[
+{title:"👶 El nacimiento de Jesús",cards:["María y José viajaron a Belén.","No encontraron lugar en la posada.","Jesús nació en un pesebre.","Los pastores recibieron la noticia.","Todos celebraron con alegría."],q:"¿Dónde nació Jesús?",a:["En un castillo","En un pesebre","En una escuela"],c:1},
+{title:"👼 María recibe la visita del ángel",cards:["María era una joven muy buena.","El ángel Gabriel apareció.","Trajo un mensaje de Dios.","María aceptó con fe.","Comenzó una gran historia."],q:"¿Quién visitó a María?",a:["Gabriel","Moisés","Pedro"],c:0},
+{title:"🛠️ José protege a su familia",cards:["José cuidaba a María y Jesús.","Recibió un mensaje en sueños.","Debían viajar para estar seguros.","José obedeció a Dios.","Protegió a su familia."],q:"¿Qué hizo José?",a:["Huyó solo","Protegió a su familia","Ignoró el mensaje"],c:1},
+{title:"❤️ Jesús ama a los niños",cards:["Muchos niños querían ver a Jesús.","Algunos adultos los alejaban.","Jesús los llamó.","Los bendijo con amor.","Todos fueron felices."],q:"¿Qué hizo Jesús con los niños?",a:["Los ignoró","Los bendijo","Los envió lejos"],c:1},
+{title:"🌊 Jesús calma la tormenta",cards:["Jesús viajaba en una barca.","Llegó una gran tormenta.","Los discípulos tuvieron miedo.","Pidieron ayuda a Jesús.","Jesús calmó el mar."],q:"¿Qué hizo Jesús?",a:["Calmó la tormenta","Saltó al agua","Corrió"],c:0},
+{title:"🍞 La multiplicación de los panes",cards:["Había mucha gente.","Solo tenían pocos panes.","Jesús dio gracias.","Compartieron la comida.","Todos comieron."],q:"¿Qué multiplicó Jesús?",a:["Piedras","Panes","Casas"],c:1},
+{title:"🚶 Jesús camina sobre el agua",cards:["Los discípulos estaban en el lago.","Vieron algo sorprendente.","Era Jesús caminando sobre el agua.","Pedro quiso acercarse.","Con fe avanzó."],q:"¿Dónde caminó Jesús?",a:["En el agua","En el fuego","En una montaña"],c:0},
+{title:"✝️ La resurrección de Jesús",cards:["Jesús murió por amor.","Sus amigos estaban tristes.","El tercer día ocurrió un milagro.","Jesús resucitó.","La esperanza volvió."],q:"¿Qué ocurrió al tercer día?",a:["Resucitó","Desapareció","Se mudó"],c:0}
+];
+
+let currentStory=0,currentCard=0;
+let stars=Number(localStorage.getItem("biblia_stars")||0);
+let completed=JSON.parse(localStorage.getItem("biblia_completed")||"[]");
+
+function renderMenu(){
+document.getElementById("stars").textContent=stars;
+let html="";
+stories.forEach((s,i)=>{
+html+=`<div class="storyBtn ${completed.includes(i)?'done':''}" onclick="openStory(${i})">${completed.includes(i)?'✅ ':''}${s.title}</div>`
+});
+document.getElementById("stories").innerHTML=html;
+}
+function openStory(i){
+currentStory=i;currentCard=0;
+menu.style.display='none';
+storyView.style.display='block';
+quizView.style.display='none';
+renderCard();
+}
+function renderCard(){
+let s=stories[currentStory];
+storyTitle.textContent=s.title;
+emoji.textContent=s.title.split(' ')[0];
+storyText.textContent=s.cards[currentCard];
+bar.style.width=((currentCard+1)/s.cards.length*100)+'%';
+}
+function nextCard(){
+let s=stories[currentStory];
+if(currentCard<s.cards.length-1){currentCard++;renderCard();}
+else showQuiz();
+}
+function prevCard(){if(currentCard>0){currentCard--;renderCard();}}
+function showQuiz(){
+storyView.style.display='none';
+quizView.style.display='block';
+let s=stories[currentStory];
+quizQuestion.textContent=s.q;
+quizResult.textContent='';
+quizOptions.innerHTML=s.a.map((o,i)=>`<div class="option" onclick="answer(${i})">${o}</div>`).join('');
+}
+function answer(i){
+let s=stories[currentStory];
+if(i===s.c){
+quizResult.innerHTML='🎉 ¡Correcto!';
+launch();
+if(!completed.includes(currentStory)){
+completed.push(currentStory);
+stars++;
+localStorage.setItem('biblia_stars',stars);
+localStorage.setItem('biblia_completed',JSON.stringify(completed));
+}
+setTimeout(()=>{
+menu.style.display='block';
+storyView.style.display='none';
+quizView.style.display='none';
+renderMenu();
+},1500);
+}else{
+quizResult.innerHTML='❌ Respuesta incorrecta. Inténtalo otra vez.';
+}
+}
+function launch(){
+for(let i=0;i<35;i++){
+let c=document.createElement('div');
+c.className='confetti';
+c.style.left=Math.random()*100+'vw';
+c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),3000);
+}
+}
+renderMenu();
+</script>
+</body>
+</html>
