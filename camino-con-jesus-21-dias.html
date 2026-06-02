@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21 Días Caminando con Jesús</title>
+<style>
+body{font-family:Arial,sans-serif;background:linear-gradient(180deg,#DFF1FF,#fff);margin:0;padding:15px}
+.container{max-width:700px;margin:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 25px rgba(0,0,0,.1)}
+h1{text-align:center;color:#2D72E8}
+.progress-wrap{background:#e5e7eb;height:18px;border-radius:20px;overflow:hidden}
+.progress{height:100%;background:linear-gradient(90deg,#2D72E8,#3BB273);width:0%}
+.stats{text-align:center;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:20px 0}
+.day{padding:10px;border-radius:12px;text-align:center;font-size:12px}
+.done{background:#dff8ea}
+.current{background:#dff1ff;border:2px solid #2D72E8}
+.locked{background:#f3f4f6;color:#999}
+.card{background:#f8fbff;border-radius:15px;padding:20px}
+button{width:100%;padding:14px;border:none;border-radius:12px;background:#2D72E8;color:#fff;font-size:16px}
+.medals{margin-top:15px}
+.confetti{position:fixed;width:8px;height:8px;top:-10px;animation:fall 3s linear forwards}
+@keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>✝️ 21 Días Caminando con Jesús</h1>
+<div class="progress-wrap"><div class="progress" id="progress"></div></div>
+<div class="stats">
+⭐ <span id="stars">0</span> | 🔥 <span id="streak">0</span> días<br>
+<b id="status"></b>
+</div>
+
+<div id="calendar" class="grid"></div>
+
+<div class="card">
+<h2 id="title"></h2>
+<p id="challenge"></p><br>
+<button onclick="completeDay()">Completar desafío de hoy</button>
+</div>
+
+<div class="medals" id="medals"></div>
+</div>
+
+<script>
+const challenges=[
+"Habla con Dios durante 2 minutos.","Lee Juan 3:16.","Haz una buena acción.",
+"Agradece a Dios por tres cosas.","Comparte una sonrisa.","Lee una historia de Jesús.",
+"Reza por tu familia.","Ayuda a alguien.","Aprende una frase de Jesús.",
+"Da gracias antes de comer.","Perdona a alguien.","Lee el nacimiento de Jesús.",
+"Ora con María.","Comparte algo con un amigo.","Lee sobre José.",
+"Reza por los enfermos.","Haz un acto de generosidad.","Lee la multiplicación de los panes.",
+"Habla con Dios antes de dormir.","Escribe algo bonito.","Escribe una oración para Jesús."
+];
+
+let day=Number(localStorage.getItem("camino_day")||1);
+let stars=Number(localStorage.getItem("camino_stars")||0);
+let streak=Number(localStorage.getItem("camino_streak")||0);
+const last=localStorage.getItem("camino_last");
+
+function render(){
+document.getElementById("stars").textContent=stars;
+document.getElementById("streak").textContent=streak;
+document.getElementById("progress").style.width=((Math.min(day-1,21)/21)*100)+"%";
+document.getElementById("title").textContent=day<=21?("Día "+day):"¡Camino Completo!";
+document.getElementById("challenge").textContent=day<=21?challenges[day-1]:"Has completado los 21 días.";
+document.getElementById("status").textContent=day<=21?("Día "+day+" de 21"):"👑 Héroe del Camino";
+
+let cal="";
+for(let i=1;i<=21;i++){
+ let cls="locked";
+ if(i<day) cls="done";
+ else if(i===day) cls="current";
+ cal+=`<div class="day ${cls}">${i<day?"✅":i===day?"📖":"🔒"}<br>Día ${i}</div>`;
+}
+document.getElementById("calendar").innerHTML=cal;
+
+let medals="";
+if(day>7) medals+="🥉 Bronce desbloqueada<br>";
+if(day>14) medals+="🥈 Plata desbloqueada<br>";
+if(day>21) medals+="🥇 Oro desbloqueada<br>";
+document.getElementById("medals").innerHTML=medals;
+}
+
+function completeDay(){
+ if(day>21) return;
+ const today=new Date().toDateString();
+ if(last===today){
+   alert("⏰ Ya completaste el desafío de hoy. Vuelve mañana.");
+   return;
+ }
+ for(let i=0;i<40;i++){
+  let c=document.createElement("div");
+  c.className="confetti";
+  c.style.left=Math.random()*100+"vw";
+  c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),3000);
+ }
+ stars++; streak++; day++;
+ localStorage.setItem("camino_day",day);
+ localStorage.setItem("camino_stars",stars);
+ localStorage.setItem("camino_streak",streak);
+ localStorage.setItem("camino_last",today);
+ setTimeout(render,800);
+}
+render();
+</script>
+</body>
+</html>
