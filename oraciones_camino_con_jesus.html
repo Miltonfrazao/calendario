@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oraciones - Camino con Jesús</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+margin:0;
+background:linear-gradient(135deg,#f6f9ff,#eef8f0);
+color:#1f2937;
+}
+.container{max-width:1000px;margin:auto;padding:20px;}
+.hero{
+background:white;border-radius:20px;padding:30px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+text-align:center;margin-bottom:20px;
+}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;}
+.card{
+background:white;padding:20px;border-radius:16px;
+box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+button{
+border:none;padding:10px 15px;border-radius:10px;
+cursor:pointer;
+}
+.feelings button{margin:5px;}
+.output{
+margin-top:15px;padding:15px;border-radius:10px;background:#f4f7fb;
+}
+.favorite{background:#fde68a;}
+.progress{
+height:16px;background:#e5e7eb;border-radius:20px;overflow:hidden;
+}
+.bar{height:100%;width:0%;background:#22c55e;}
+audio{width:100%;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+<h1>🙏 Oraciones</h1>
+<p>Encuentra una oración para cada momento, reflexiona con la Palabra de Dios y fortalece tu fe cada día.</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h2>🙏 Oraciones para cada momento</h2>
+<div class="feelings">
+<button onclick="showPrayer('ansiedad')">😰 Ansiedad</button>
+<button onclick="showPrayer('gratitud')">😊 Gratitud</button>
+<button onclick="showPrayer('fortaleza')">💪 Fortaleza</button>
+<button onclick="showPrayer('familia')">👨‍👩‍👧 Familia</button>
+</div>
+<div id="prayerOutput" class="output">Selecciona una opción.</div>
+</div>
+
+<div class="card">
+<h2>📖 Oración + Versículo</h2>
+<p><strong>Oración:</strong><br>
+Señor, llena mi corazón con Tu paz y guía mis pasos en cada decisión.</p>
+<p><strong>Versículo:</strong><br>
+"La paz os dejo, mi paz os doy." — Juan 14:27</p>
+</div>
+
+<div class="card">
+<h2>🎙️ Oraciones Guiadas</h2>
+<p>Espacio preparado para tus audios.</p>
+<audio controls>
+<source src="" type="audio/mpeg">
+</audio>
+<p>Puedes reemplazar el archivo por tus propias narraciones.</p>
+</div>
+
+<div class="card favorite">
+<h2>❤️ Mis Oraciones Favoritas</h2>
+<ul id="favorites">
+<li>Aún no tienes favoritas.</li>
+</ul>
+</div>
+
+</div>
+
+<div class="card" style="margin-top:20px;">
+<h2>🌟 Desafío de Oración - 7 Días</h2>
+<p>Día completado: <span id="day">0</span>/7</p>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<br>
+<button onclick="nextDay()">Completar Día</button>
+</div>
+
+</div>
+
+<script>
+const prayers={
+ansiedad:"Señor, pongo mis preocupaciones en Tus manos. Dame paz, confianza y descanso en Tu presencia. Amén.",
+gratitud:"Gracias Señor por Tu amor, Tu cuidado y las bendiciones que recibo cada día. Amén.",
+fortaleza:"Padre, dame fuerza para enfrentar los desafíos y permanecer firme en la fe. Amén.",
+familia:"Bendice a mi familia, protégela y llena nuestro hogar de amor, paz y unidad. Amén."
+};
+
+function showPrayer(type){
+document.getElementById('prayerOutput').innerHTML=prayers[type] +
+'<br><br><button onclick="saveFavorite(`'+type+'`)">❤️ Guardar Favorita</button>';
+}
+
+function saveFavorite(type){
+const list=document.getElementById('favorites');
+if(list.children.length===1 && list.children[0].textContent.includes('Aún')) list.innerHTML='';
+const li=document.createElement('li');
+li.textContent=prayers[type];
+list.appendChild(li);
+}
+
+let day=0;
+function nextDay(){
+if(day<7){
+day++;
+document.getElementById('day').textContent=day;
+document.getElementById('bar').style.width=(day/7*100)+'%';
+}
+}
+</script>
+</body>
+</html>
