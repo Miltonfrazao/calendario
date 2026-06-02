@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oraciones 2.2 - Niños</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f4f9ff;color:#234;}
+.container{max-width:1100px;margin:auto;padding:20px;}
+.card{background:#fff;border-radius:18px;padding:20px;margin:15px 0;box-shadow:0 4px 15px rgba(0,0,0,.08);}
+.hero{text-align:center}
+button{padding:10px 14px;border:none;border-radius:12px;cursor:pointer;margin:4px;}
+.output,.verse{background:#f5f8ff;padding:12px;border-radius:12px;margin-top:10px;}
+.progress{height:20px;background:#ddd;border-radius:99px;overflow:hidden;}
+.bar{height:100%;width:0;background:#4caf50;}
+.badge{display:inline-block;padding:8px 12px;border-radius:20px;background:#ffe082;margin:5px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="card hero">
+<h1>🙏 Centro de Oración para Niños</h1>
+<p>Habla con Jesús cada día y gana medallas mientras creces en la fe.</p>
+</div>
+
+<div class="grid">
+<div class="card">
+<h2>🧒 Oraciones para Cada Momento</h2>
+<button onclick="showPrayer('escuela')">🏫 Escuela</button>
+<button onclick="showPrayer('amigos')">🤝 Amigos</button>
+<button onclick="showPrayer('familia')">👨‍👩‍👧 Familia</button>
+<button onclick="showPrayer('miedo')">🌙 Tengo miedo</button>
+<button onclick="showPrayer('gracias')">😊 Dar gracias</button>
+<button onclick="showPrayer('dormir')">😴 Antes de dormir</button>
+<div id="output" class="output">Selecciona una opción.</div>
+</div>
+
+<div class="card">
+<h2>📖 Oración + Versículo del Día</h2>
+<div id="dailyPrayer"></div>
+<div id="dailyVerse" class="verse"></div>
+</div>
+
+<div class="card">
+<h2>🏅 Cuadro de Medallas</h2>
+<div id="medals">
+<p>Aún no has ganado medallas.</p>
+</div>
+</div>
+
+<div class="card">
+<h2>❤️ Mi Petición a Jesús</h2>
+<textarea id="request" style="width:100%;height:100px"></textarea><br><br>
+<button onclick="saveRequest()">Guardar</button>
+<p id="msg"></p>
+</div>
+</div>
+
+<div class="card">
+<h2>🌟 Desafío Espiritual de 14 Días</h2>
+<p>Progreso: <span id="days">0</span>/14</p>
+<div class="progress"><div id="bar" class="bar"></div></div><br>
+<button id="completeBtn" onclick="advance()">Completar Día</button>
+<p id="challengeMsg">Puedes completar un día cada 24 horas.</p>
+</div>
+
+</div>
+
+<script>
+const prayers={
+escuela:"Jesús, ayúdame a aprender cosas buenas y a ser amable con todos en la escuela.",
+amigos:"Señor, gracias por mis amigos. Ayúdame a ser un buen compañero.",
+familia:"Jesús, cuida a mi familia y llena nuestro hogar de amor.",
+miedo:"Cuando tenga miedo, recuérdame que Tú siempre estás conmigo.",
+gracias:"Gracias Jesús por este día, por mi familia y por todo lo que me das.",
+dormir:"Señor, protégeme mientras duermo y dame un descanso tranquilo."
+};
+
+function showPrayer(k){
+document.getElementById('output').innerText=prayers[k];
+}
+
+const daily=[
+["Jesús, ayúdame a ser amable hoy.","Amaos unos a otros. — Juan 13:34"],
+["Gracias por este nuevo día.","Este es el día que hizo el Señor. — Salmo 118:24"],
+["Ayúdame a obedecer a mis padres.","Honra a tu padre y a tu madre. — Efesios 6:2"],
+["Cuida de mis amigos.","El amigo ama en todo tiempo. — Proverbios 17:17"],
+["Dame valentía.","Sé fuerte y valiente. — Josué 1:9"],
+["Gracias por mi familia.","Yo y mi casa serviremos al Señor. — Josué 24:15"],
+["Enséñame a compartir.","Hay más felicidad en dar. — Hechos 20:35"],
+["Ayúdame a decir la verdad.","La verdad os hará libres. — Juan 8:32"],
+["Cuida de los enfermos.","El Señor sostiene a los que sufren. — Salmo 41:3"],
+["Gracias por la creación.","Los cielos cuentan la gloria de Dios. — Salmo 19:1"],
+["Ayúdame a perdonar.","Perdonaos unos a otros. — Colosenses 3:13"],
+["Guía mis pasos.","Tu palabra es lámpara a mis pies. — Salmo 119:105"],
+["Dame un corazón alegre.","Alegraos siempre. — 1 Tesalonicenses 5:16"],
+["Gracias porque me amas.","Dios es amor. — 1 Juan 4:8"]
+];
+
+const idx=new Date().getDate()%daily.length;
+document.getElementById('dailyPrayer').innerHTML="<strong>Oración:</strong><br>"+daily[idx][0];
+document.getElementById('dailyVerse').innerHTML="<strong>Versículo:</strong><br>"+daily[idx][1];
+
+function saveRequest(){
+localStorage.setItem('child_request',document.getElementById('request').value);
+document.getElementById('msg').innerText='✅ Guardado';
+}
+
+let days=parseInt(localStorage.getItem('challenge_days')||'0');
+document.getElementById('days').textContent=days;
+document.getElementById('bar').style.width=(days/14*100)+'%';
+
+function renderMedals(){
+let html="";
+if(days>=3) html+='<span class="badge">🥉 Explorador de Fe</span>';
+if(days>=7) html+='<span class="badge">🥈 Amigo de Jesús</span>';
+if(days>=10) html+='<span class="badge">🥇 Campeón de Oración</span>';
+if(days>=14) html+='<span class="badge">👑 Héroe de la Fe</span>';
+document.getElementById('medals').innerHTML=html||"<p>Aún no has ganado medallas.</p>";
+}
+renderMedals();
+
+const last=localStorage.getItem('last_complete');
+if(last){
+ const diff=Date.now()-parseInt(last);
+ if(diff<86400000) document.getElementById('completeBtn').disabled=true;
+}
+
+function advance(){
+const now=Date.now();
+const last=localStorage.getItem('last_complete');
+if(last && now-parseInt(last)<86400000){
+alert("Puedes completar otro día después de 24 horas.");
+return;
+}
+if(days<14){
+days++;
+localStorage.setItem('challenge_days',days);
+localStorage.setItem('last_complete',now);
+document.getElementById('days').textContent=days;
+document.getElementById('bar').style.width=(days/14*100)+'%';
+document.getElementById('completeBtn').disabled=true;
+renderMedals();
+}
+}
+</script>
+</body>
+</html>
