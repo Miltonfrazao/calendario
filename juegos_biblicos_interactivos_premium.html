@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Juegos Bíblicos Interactivos</title>
+
+<style>
+:root{
+  --blue:#2D8CFF;
+  --blue-dark:#1B5E9E;
+  --sky:#8ED8FF;
+  --yellow:#FFD447;
+  --gold:#F5B400;
+  --green:#55C76A;
+  --red:#FF6B6B;
+  --white:#FFFFFF;
+  --ink:#17324D;
+  --soft:#F3FAFF;
+  --shadow:0 14px 35px rgba(23,50,77,.16);
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.9), transparent 28%),
+    linear-gradient(180deg, #7bd2ff 0%, #dff6ff 45%, #fff3b4 100%);
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.8) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(255,212,71,.55) 0 3px, transparent 4px);
+  background-size:70px 70px, 110px 110px;
+  animation:floatBg 14s linear infinite;
+  pointer-events:none;
+  z-index:-1;
+}
+
+@keyframes floatBg{
+  from{background-position:0 0, 0 0;}
+  to{background-position:80px 120px, -120px 90px;}
+}
+
+.app{
+  width:100%;
+  max-width:460px;
+  margin:0 auto;
+  padding:18px 14px 28px;
+}
+
+.screen{
+  display:none;
+  animation:popIn .35s ease both;
+}
+
+.screen.active{display:block;}
+
+@keyframes popIn{
+  from{opacity:0; transform:translateY(16px) scale(.98);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+
+.hero{
+  background:rgba(255,255,255,.92);
+  border:3px solid rgba(255,255,255,.7);
+  border-radius:30px;
+  padding:22px 18px;
+  box-shadow:var(--shadow);
+  text-align:center;
+  overflow:hidden;
+  position:relative;
+}
+
+.hero::after{
+  content:"✨";
+  position:absolute;
+  right:16px;
+  top:12px;
+  font-size:28px;
+  animation:twinkle 1.6s infinite alternate;
+}
+
+@keyframes twinkle{
+  from{transform:scale(.9) rotate(-8deg); opacity:.55;}
+  to{transform:scale(1.2) rotate(8deg); opacity:1;}
+}
+
+.logo{
+  width:86px;
+  height:86px;
+  margin:0 auto 10px;
+  border-radius:50%;
+  background:linear-gradient(180deg, var(--blue), #80d7ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:42px;
+  box-shadow:0 10px 22px rgba(45,140,255,.32);
+}
+
+h1{
+  margin:8px 0 6px;
+  font-size:29px;
+  line-height:1.06;
+  color:var(--blue-dark);
+}
+
+.subtitle{
+  margin:0 auto 14px;
+  font-size:16px;
+  color:#4d6277;
+  line-height:1.35;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin:14px 0;
+}
+
+.stat{
+  background:#F5FBFF;
+  border:2px solid #D7EEFF;
+  border-radius:18px;
+  padding:9px 5px;
+  font-weight:800;
+  font-size:13px;
+}
+
+.stat span{
+  display:block;
+  font-size:20px;
+  margin-bottom:2px;
+}
+
+.btn{
+  width:100%;
+  border:0;
+  border-radius:20px;
+  padding:16px 14px;
+  font-size:17px;
+  font-weight:900;
+  color:var(--ink);
+  background:linear-gradient(180deg, #FFE16A, var(--yellow));
+  box-shadow:0 8px 0 #D9A900, 0 13px 24px rgba(0,0,0,.14);
+  cursor:pointer;
+  margin:9px 0;
+  transition:.15s ease;
+}
+
+.btn:active{
+  transform:translateY(5px);
+  box-shadow:0 3px 0 #D9A900, 0 8px 16px rgba(0,0,0,.12);
+}
+
+.btn.blue{
+  background:linear-gradient(180deg, #65B5FF, var(--blue));
+  color:white;
+  box-shadow:0 8px 0 #1769C9, 0 13px 24px rgba(0,0,0,.14);
+}
+
+.btn.green{
+  background:linear-gradient(180deg, #7FE08F, var(--green));
+  color:white;
+  box-shadow:0 8px 0 #36A94D, 0 13px 24px rgba(0,0,0,.14);
+}
+
+.btn.white{
+  background:white;
+  color:var(--blue-dark);
+  box-shadow:0 7px 0 #D7EEFF, 0 12px 20px rgba(0,0,0,.1);
+}
+
+.panel{
+  background:rgba(255,255,255,.95);
+  border-radius:28px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  margin-top:12px;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.smallbtn{
+  border:0;
+  border-radius:15px;
+  padding:10px 12px;
+  font-weight:900;
+  background:#EAF6FF;
+  color:var(--blue-dark);
+  cursor:pointer;
+}
+
+.title{
+  margin:4px 0 2px;
+  font-size:23px;
+  color:var(--blue-dark);
+  text-align:center;
+}
+
+.progressWrap{
+  height:14px;
+  background:#DDEEFF;
+  border-radius:99px;
+  overflow:hidden;
+  margin:12px 0 6px;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg, var(--green), var(--yellow));
+  border-radius:99px;
+  transition:.35s;
+}
+
+.levels{
+  display:grid;
+  gap:10px;
+}
+
+.levelCard{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:#F8FCFF;
+  border:2px solid #D7EEFF;
+  border-radius:22px;
+  padding:13px;
+  text-align:left;
+}
+
+.levelCard strong{
+  font-size:17px;
+  color:var(--blue-dark);
+}
+
+.levelCard p{
+  margin:4px 0 0;
+  font-size:13px;
+  color:#5b6d7e;
+}
+
+.badge{
+  min-width:58px;
+  text-align:center;
+  background:#FFF1A5;
+  padding:8px;
+  border-radius:16px;
+  font-weight:900;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+
+.memory-card{
+  height:92px;
+  border-radius:18px;
+  border:0;
+  background:linear-gradient(180deg, #4FA7FF, #1F7BE2);
+  color:white;
+  font-size:15px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:6px;
+  box-shadow:0 7px 0 #1769C9;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.memory-card.flipped{
+  background:white;
+  color:var(--ink);
+  box-shadow:0 7px 0 #D7EEFF;
+  transform:rotateY(180deg);
+}
+
+.memory-card.matched{
+  background:linear-gradient(180deg, #7FE08F, var(--green));
+  color:white;
+  box-shadow:0 7px 0 #36A94D;
+  animation:bounce .45s;
+}
+
+@keyframes bounce{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.08);}
+}
+
+.questionBox{
+  background:#F5FBFF;
+  border:2px solid #D7EEFF;
+  border-radius:24px;
+  padding:18px;
+  margin:14px 0;
+}
+
+.question{
+  font-size:21px;
+  line-height:1.32;
+  font-weight:900;
+}
+
+.option{
+  background:#FFFFFF;
+  border:3px solid #D7EEFF;
+  color:var(--ink);
+  box-shadow:0 6px 0 #D7EEFF;
+}
+
+.option.correct{
+  background:#E9FFE9;
+  border-color:var(--green);
+}
+
+.option.wrong{
+  background:#FFECEC;
+  border-color:var(--red);
+}
+
+.feedback{
+  min-height:30px;
+  font-size:17px;
+  font-weight:900;
+  margin:12px 0 4px;
+  text-align:center;
+}
+
+.reward{
+  text-align:center;
+  font-size:58px;
+  margin:10px 0;
+  animation:rewardPulse 1.2s infinite alternate;
+}
+
+@keyframes rewardPulse{
+  from{transform:scale(.96);}
+  to{transform:scale(1.08);}
+}
+
+.footerNote{
+  text-align:center;
+  font-size:12px;
+  color:#607487;
+  margin-top:12px;
+}
+
+.confetti{
+  position:fixed;
+  top:-20px;
+  width:10px;
+  height:14px;
+  border-radius:3px;
+  animation:fall 1.8s linear forwards;
+  z-index:20;
+}
+
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(500deg); opacity:.2;}
+}
+
+@media(max-width:380px){
+  h1{font-size:25px;}
+  .grid{gap:8px;}
+  .memory-card{height:82px; font-size:13px;}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <section id="home" class="screen active">
+    <div class="hero">
+      <div class="logo">✝️</div>
+      <h1>Juegos Bíblicos Interactivos</h1>
+      <p class="subtitle">Una experiencia divertida para aprender, recordar y crecer con Jesús.</p>
+
+      <div class="stats">
+        <div class="stat"><span id="scoreHome">0</span>Puntos</div>
+        <div class="stat"><span id="starsHome">0</span>Estrellas</div>
+        <div class="stat"><span id="levelHome">1</span>Nivel</div>
+      </div>
+
+      <button class="btn blue" onclick="openLevels('memory')">🧠 Jugar Memoria Bíblica</button>
+      <button class="btn green" onclick="openLevels('phrase')">✍️ Completa la Frase</button>
+      <button class="btn white" onclick="openFinal()">🏆 Ver mi progreso</button>
+    </div>
+
+    <p class="footerNote">Contenido educativo cristiano para niños. Ideal para usar dentro de tu app.</p>
+  </section>
+
+  <section id="levels" class="screen">
+    <div class="panel">
+      <div class="topbar">
+        <button class="smallbtn" onclick="goHome()">← Inicio</button>
+        <strong id="levelModeTitle">Elegir nivel</strong>
+        <span>⭐ <span id="scoreTop">0</span></span>
+      </div>
+
+      <h2 class="title">Elige tu aventura</h2>
+
+      <div class="levels">
+        <div class="levelCard" onclick="startSelectedGame(1)">
+          <div>
+            <strong>Nivel 1: Principiante</strong>
+            <p>Preguntas fáciles y personajes conocidos.</p>
+          </div>
+          <div class="badge">Fácil</div>
+        </div>
+
+        <div class="levelCard" onclick="startSelectedGame(2)">
+          <div>
+            <strong>Nivel 2: Explorador</strong>
+            <p>Más desafíos y más aprendizaje bíblico.</p>
+          </div>
+          <div class="badge">Medio</div>
+        </div>
+
+        <div class="levelCard" onclick="startSelectedGame(3)">
+          <div>
+            <strong>Nivel 3: Campeón</strong>
+            <p>Para niños atentos y valientes.</p>
+          </div>
+          <div class="badge">Pro</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="memory" class="screen">
+    <div class="panel">
+      <div class="topbar">
+        <button class="smallbtn" onclick="openLevels('memory')">← Niveles</button>
+        <strong>🧠 Memoria Bíblica</strong>
+        <span>⭐ <span id="memoryScore">0</span></span>
+      </div>
+
+      <div class="progressWrap"><div id="memoryProgress" class="progress"></div></div>
+      <p id="memoryInfo" class="footerNote"></p>
+
+      <div id="memoryGrid" class="grid"></div>
+      <p id="memoryFeedback" class="feedback"></p>
+
+      <button class="btn" onclick="restartMemory()">🔄 Reiniciar nivel</button>
+      <button class="btn white" onclick="goHome()">🏠 Volver al inicio</button>
+    </div>
+  </section>
+
+  <section id="phrase" class="screen">
+    <div class="panel">
+      <div class="topbar">
+        <button class="smallbtn" onclick="openLevels('phrase')">← Niveles</button>
+        <strong>✍️ Completa la Frase</strong>
+        <span>⭐ <span id="phraseScore">0</span></span>
+      </div>
+
+      <div class="progressWrap"><div id="phraseProgress" class="progress"></div></div>
+      <p id="phraseInfo" class="footerNote"></p>
+
+      <div class="questionBox">
+        <div id="question" class="question"></div>
+      </div>
+
+      <div id="options"></div>
+      <p id="phraseFeedback" class="feedback"></p>
+
+      <button id="nextBtn" class="btn hidden" onclick="nextQuestion()">Siguiente ➜</button>
+      <button class="btn white" onclick="goHome()">🏠 Volver al inicio</button>
+    </div>
+  </section>
+
+  <section id="final" class="screen">
+    <div class="hero">
+      <div class="reward">🏆</div>
+      <h1>¡Excelente trabajo!</h1>
+      <p class="subtitle">Hoy aprendiste más sobre la Palabra de Dios jugando.</p>
+
+      <div class="stats">
+        <div class="stat"><span id="finalScore">0</span>Puntos</div>
+        <div class="stat"><span id="finalStars">0</span>Estrellas</div>
+        <div class="stat"><span id="finalLevel">1</span>Nivel</div>
+      </div>
+
+      <button class="btn blue" onclick="goHome()">Jugar otra vez</button>
+      <button class="btn white" onclick="resetAll()">Reiniciar progreso</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+let totalScore = Number(localStorage.getItem("biblicalScore") || 0);
+let selectedGame = "memory";
+let currentLevel = 1;
+
+let firstCard = null;
+let lockMemory = false;
+let matchedCount = 0;
+let currentCards = [];
+
+let phraseQuestions = [];
+let currentQuestionIndex = 0;
+let answered = false;
+
+const memoryLevels = {
+  1: [
+    ["Noé", "Arca"],
+    ["David", "Goliat"],
+    ["Moisés", "Mar Rojo"]
+  ],
+  2: [
+    ["Jonás", "Gran Pez"],
+    ["Daniel", "Leones"],
+    ["José", "Túnica"],
+    ["Jesús", "Niños"]
+  ],
+  3: [
+    ["Abraham", "Promesa"],
+    ["Ester", "Reina"],
+    ["Sansón", "Fuerza"],
+    ["Pedro", "Pescador"],
+    ["Pablo", "Cartas"],
+    ["María", "Ángel"]
+  ]
+};
+
+const phraseLevels = {
+  1: [
+    { text:"El Señor es mi ______.", options:["Pastor","Castillo","Ruido"], answer:"Pastor", help:"Dios cuida de nosotros con amor." },
+    { text:"Dios es ______.", options:["amor","miedo","enojo"], answer:"amor", help:"La Biblia nos enseña que Dios es amor." },
+    { text:"Jesús dijo: Dejen que los ______ vengan a mí.", options:["niños","soldados","reyes"], answer:"niños", help:"Jesús ama a los niños." },
+    { text:"Noé construyó un ______.", options:["arca","castillo","carro"], answer:"arca", help:"Noé obedeció a Dios." }
+  ],
+  2: [
+    { text:"Todo lo puedo en Cristo que me ______.", options:["fortalece","esconde","olvida"], answer:"fortalece", help:"Cristo nos da fuerzas." },
+    { text:"David venció a ______.", options:["Goliat","Faraón","Jonás"], answer:"Goliat", help:"David confió en Dios." },
+    { text:"Daniel fue protegido en el foso de los ______.", options:["leones","peces","caballos"], answer:"leones", help:"Dios protegió a Daniel." },
+    { text:"Moisés abrió el ______ con la ayuda de Dios.", options:["Mar Rojo","desierto","jardín"], answer:"Mar Rojo", help:"Dios hizo un gran milagro." },
+    { text:"Jonás estuvo dentro de un gran ______.", options:["pez","barco","árbol"], answer:"pez", help:"Dios le dio una nueva oportunidad." }
+  ],
+  3: [
+    { text:"La fe mueve ______.", options:["montañas","sillas","nubes"], answer:"montañas", help:"La fe nos ayuda a confiar en Dios." },
+    { text:"Lámpara es a mis pies tu ______.", options:["palabra","casa","ciudad"], answer:"palabra", help:"La Palabra de Dios guía nuestro camino." },
+    { text:"Jesús enseñó a amar al ______.", options:["prójimo","dinero","orgullo"], answer:"prójimo", help:"Amar al prójimo es un mandamiento importante." },
+    { text:"Ester fue una reina valiente que ayudó a su ______.", options:["pueblo","tesoro","palacio"], answer:"pueblo", help:"Ester actuó con valentía." },
+    { text:"Pablo escribió muchas ______.", options:["cartas","canciones","coronas"], answer:"cartas", help:"Sus cartas enseñan sobre Jesús." },
+    { text:"Pedro era pescador y siguió a ______.", options:["Jesús","Faraón","Goliat"], answer:"Jesús", help:"Pedro dejó todo para seguir a Jesús." }
+  ]
+};
+
+function saveScore(){
+  localStorage.setItem("biblicalScore", totalScore);
+  updateStats();
+}
+
+function getStars(){ return Math.floor(totalScore / 50); }
+function getGeneralLevel(){ return Math.max(1, Math.min(9, Math.floor(totalScore / 100) + 1)); }
+
+function updateStats(){
+  const ids = ["scoreHome","scoreTop","memoryScore","phraseScore","finalScore"];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.innerText = totalScore;
+  });
+
+  document.getElementById("starsHome").innerText = getStars();
+  document.getElementById("levelHome").innerText = getGeneralLevel();
+  document.getElementById("finalStars").innerText = getStars();
+  document.getElementById("finalLevel").innerText = getGeneralLevel();
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  updateStats();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function goHome(){ showScreen("home"); }
+
+function openLevels(game){
+  selectedGame = game;
+  document.getElementById("levelModeTitle").innerText = game === "memory" ? "Memoria Bíblica" : "Completa la Frase";
+  showScreen("levels");
+}
+
+function startSelectedGame(level){
+  currentLevel = level;
+  if(selectedGame === "memory") startMemory(level);
+  if(selectedGame === "phrase") startPhrase(level);
+}
+
+function shuffle(arr){
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function startMemory(level){
+  showScreen("memory");
+  const grid = document.getElementById("memoryGrid");
+  const info = document.getElementById("memoryInfo");
+  const feedback = document.getElementById("memoryFeedback");
+
+  firstCard = null;
+  lockMemory = false;
+  matchedCount = 0;
+  feedback.innerText = "";
+
+  const pairs = memoryLevels[level];
+  currentCards = shuffle(pairs.flat());
+  grid.innerHTML = "";
+
+  info.innerText = "Nivel " + level + " • Encuentra " + pairs.length + " pares bíblicos.";
+  document.getElementById("memoryProgress").style.width = "0%";
+
+  currentCards.forEach(value => {
+    const card = document.createElement("button");
+    card.className = "memory-card";
+    card.innerText = "❔";
+    card.dataset.value = value;
+    card.onclick = () => flipCard(card, pairs);
+    grid.appendChild(card);
+  });
+}
+
+function flipCard(card, pairs){
+  if(lockMemory || card.classList.contains("matched") || card.classList.contains("flipped")) return;
+
+  card.classList.add("flipped");
+  card.innerText = card.dataset.value;
+
+  if(!firstCard){
+    firstCard = card;
+    return;
+  }
+
+  lockMemory = true;
+
+  const isPair = pairs.some(pair =>
+    pair.includes(firstCard.dataset.value) &&
+    pair.includes(card.dataset.value) &&
+    firstCard.dataset.value !== card.dataset.value
+  );
+
+  setTimeout(() => {
+    if(isPair){
+      firstCard.classList.add("matched");
+      card.classList.add("matched");
+      matchedCount++;
+
+      totalScore += 10 * currentLevel;
+      saveScore();
+
+      document.getElementById("memoryFeedback").innerText = "✅ ¡Muy bien! Encontraste un par bíblico.";
+      document.getElementById("memoryProgress").style.width = ((matchedCount / pairs.length) * 100) + "%";
+
+      if(matchedCount === pairs.length){
+        totalScore += 25 * currentLevel;
+        saveScore();
+        document.getElementById("memoryFeedback").innerText = "🎉 ¡Nivel completado! Dios se alegra cuando aprendemos con alegría.";
+        confetti();
+        setTimeout(openFinal, 1200);
+      }
+    } else {
+      firstCard.classList.remove("flipped");
+      card.classList.remove("flipped");
+      firstCard.innerText = "❔";
+      card.innerText = "❔";
+      document.getElementById("memoryFeedback").innerText = "Inténtalo otra vez 🙏";
+    }
+
+    firstCard = null;
+    lockMemory = false;
+  }, 700);
+}
+
+function restartMemory(){
+  startMemory(currentLevel);
+}
+
+function startPhrase(level){
+  showScreen("phrase");
+  phraseQuestions = shuffle(phraseLevels[level]);
+  currentQuestionIndex = 0;
+  answered = false;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  answered = false;
+  const q = phraseQuestions[currentQuestionIndex];
+
+  document.getElementById("question").innerText = q.text;
+  document.getElementById("phraseFeedback").innerText = "";
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("phraseInfo").innerText = "Nivel " + currentLevel + " • Pregunta " + (currentQuestionIndex + 1) + " de " + phraseQuestions.length;
+  document.getElementById("phraseProgress").style.width = ((currentQuestionIndex / phraseQuestions.length) * 100) + "%";
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+
+  shuffle(q.options).forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "btn option";
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(btn, opt);
+    options.appendChild(btn);
+  });
+}
+
+function checkAnswer(button, option){
+  if(answered) return;
+  answered = true;
+
+  const q = phraseQuestions[currentQuestionIndex];
+  const buttons = document.querySelectorAll(".option");
+
+  buttons.forEach(btn => {
+    if(btn.innerText === q.answer) btn.classList.add("correct");
+  });
+
+  if(option === q.answer){
+    button.classList.add("correct");
+    totalScore += 12 * currentLevel;
+    document.getElementById("phraseFeedback").innerText = "✅ ¡Correcto! " + q.help;
+    confetti(12);
+  } else {
+    button.classList.add("wrong");
+    document.getElementById("phraseFeedback").innerText = "❌ La respuesta correcta es: " + q.answer + ". " + q.help;
+  }
+
+  saveScore();
+  document.getElementById("nextBtn").classList.remove("hidden");
+}
+
+function nextQuestion(){
+  currentQuestionIndex++;
+
+  if(currentQuestionIndex >= phraseQuestions.length){
+    document.getElementById("phraseProgress").style.width = "100%";
+    totalScore += 20 * currentLevel;
+    saveScore();
+    confetti();
+    setTimeout(openFinal, 500);
+    return;
+  }
+
+  loadQuestion();
+}
+
+function openFinal(){
+  updateStats();
+  showScreen("final");
+}
+
+function resetAll(){
+  totalScore = 0;
+  localStorage.removeItem("biblicalScore");
+  updateStats();
+  goHome();
+}
+
+function confetti(amount = 28){
+  const colors = ["#FFD447","#2D8CFF","#55C76A","#FF6B6B","#FFFFFF"];
+  for(let i=0; i<amount; i++){
+    const piece = document.createElement("div");
+    piece.className = "confetti";
+    piece.style.left = Math.random() * 100 + "vw";
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = Math.random() * .25 + "s";
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 2000);
+  }
+}
+
+updateStats();
+</script>
+</body>
+</html>
