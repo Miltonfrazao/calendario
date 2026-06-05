@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camino con Jesús - Quiz Bíblico Diario v2.1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+html,body{width:100%;min-height:100%;overflow-x:hidden}
+body{background:linear-gradient(180deg,#EAF7FF,#FFFFFF);padding:10px}
+.quiz-wrapper{width:100%;max-width:430px;margin:0 auto;background:#fff;border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(0,0,0,.10);overflow:hidden}
+.logo{text-align:center;margin-bottom:16px}
+.logo h1{font-size:32px;line-height:1.15;font-weight:800;color:#2D72E8}
+.logo h1 span{color:#3BB273}
+.logo p{margin-top:8px;font-size:17px;color:#1D3557}
+.stats{display:flex;justify-content:space-between;gap:12px;margin:18px 0 14px;font-size:18px;font-weight:700;color:#1D3557}
+.progress-container{width:100%;background:#E5E7EB;height:16px;border-radius:999px;overflow:hidden;margin-bottom:16px}
+.progress{height:100%;width:0%;background:linear-gradient(90deg,#2D72E8,#3BB273);border-radius:999px;transition:.4s}
+.streak-card{background:linear-gradient(180deg,#FFF6C8,#FFE98A);border:2px solid #F2C94C;border-radius:18px;padding:13px 15px;margin:0 0 18px;text-align:center;color:#7A4B00;box-shadow:0 4px 12px rgba(242,201,76,.25)}
+.streak-card .title{font-size:17px;font-weight:800;margin-bottom:3px}
+.streak-card .days{font-size:22px;font-weight:900;color:#8B5A00}
+.question{font-size:24px;line-height:1.35;font-weight:800;color:#1D3557;text-align:center;margin:20px 0}
+.answers{display:flex;flex-direction:column;gap:12px}
+.answers button{width:100%;min-height:58px;border:none;border-radius:18px;background:#F4F6FA;color:#111827;font-size:20px;cursor:pointer;padding:14px 12px;transition:.2s}
+.answers button.correct{background:#DFF8EA;border:2px solid #3BB273}
+.answers button.wrong{background:#FFE1E1;border:2px solid #FF6B6B}
+.feedback{text-align:center;margin-top:16px;min-height:32px;font-size:18px;font-weight:700;color:#1D3557}
+.end{display:none;text-align:center;padding:20px 5px}
+.end h2{color:#2D72E8;font-size:28px;margin-bottom:12px}
+.end p{font-size:18px;color:#1D3557}
+.restart{margin-top:18px;background:#3BB273!important;color:#fff!important;width:100%;padding:14px;border:none;border-radius:14px;font-size:17px}
+.confetti{position:fixed;width:9px;height:9px;top:-15px;z-index:9999;animation:fall 3s linear forwards}
+@keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@media(max-width:420px){
+body{padding:8px}.quiz-wrapper{max-width:100%;border-radius:18px;padding:15px}.logo h1{font-size:29px}.logo p{font-size:16px}.stats{font-size:16px}.question{font-size:22px}.answers button{font-size:18px;min-height:54px}.streak-card .days{font-size:20px}
+}
+@media(max-width:340px){.logo h1{font-size:25px}.question{font-size:20px}.answers button{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="quiz-wrapper">
+<div class="logo"><h1>Camino <span>con Jesús</span></h1><p>Quiz Bíblico Diario</p></div>
+<div class="stats"><div>Puntos: <span id="score">0</span></div><div>Día: <span id="day">1</span>/6</div></div>
+<div class="progress-container"><div class="progress" id="progress"></div></div>
+
+<div class="streak-card">
+  <div class="title">🔥 Racha de Fe</div>
+  <div class="days"><span id="streakDays">1</span> días seguidos</div>
+</div>
+
+<div id="quiz"><div class="question" id="question"></div><div class="answers" id="answers"></div><div class="feedback" id="feedback"></div></div>
+<div class="end" id="endScreen"><h2>🎉 ¡Misión completada!</h2><p id="finalScore"></p><button class="restart" onclick="restartQuiz()">Reiniciar Quiz</button></div>
+</div>
+<script>
+const questions=[
+{q:"¿Quién fue la madre de Jesús?",a:["María","Marta","Sara","Rebeca"],c:0},
+{q:"¿Cómo se llamaba el padre adoptivo de Jesús?",a:["Pedro","José","Juan","Lucas"],c:1},
+{q:"¿En qué ciudad nació Jesús?",a:["Nazaret","Jerusalén","Belén","Galilea"],c:2},
+{q:"¿Quién anunció a María que tendría un hijo?",a:["Miguel","Gabriel","Rafael","Elías"],c:1},
+{q:"¿Cuál fue el primer milagro de Jesús?",a:["Multiplicar panes","Caminar sobre el agua","Convertir agua en vino","Sanar un ciego"],c:2},
+{q:"¿Dónde vivía Jesús cuando era niño?",a:["Belén","Roma","Nazaret","Egipto"],c:2},
+{q:"¿Quiénes visitaron a Jesús cuando nació?",a:["Reyes Magos","Soldados","Profetas","Pescadores"],c:0},
+{q:"¿Qué oficio tenía José?",a:["Pastor","Pescador","Carpintero","Soldado"],c:2},
+{q:"¿Cuántos discípulos tuvo Jesús?",a:["10","12","14","20"],c:1},
+{q:"¿Qué animal llevó María hacia Belén?",a:["Caballo","Burro","Camello","Oveja"],c:1},
+{q:"¿Quién bautizó a Jesús?",a:["Pedro","Juan Bautista","José","Pablo"],c:1},
+{q:"¿Dónde fue bautizado Jesús?",a:["Río Jordán","Mar Rojo","Galilea","Nilo"],c:0},
+{q:"¿Qué oración enseñó Jesús?",a:["Ave María","Padre Nuestro","Salmo 23","Magnificat"],c:1},
+{q:"¿Quién negó a Jesús tres veces?",a:["Pedro","Tomás","Juan","Andrés"],c:0},
+{q:"¿Qué hizo Jesús con cinco panes y dos peces?",a:["Los guardó","Los vendió","Alimentó a miles","Los regaló"],c:2},
+{q:"¿Quién fue el ángel que visitó a María?",a:["Gabriel","Miguel","Rafael","Uriel"],c:0},
+{q:"¿En qué celebración convirtió Jesús el agua en vino?",a:["Bautismo","Boda","Pascua","Pentecostés"],c:1},
+{q:"¿Qué discípulo caminó sobre el agua con Jesús?",a:["Juan","Pedro","Mateo","Felipe"],c:1},
+{q:"¿Qué ciudad era conocida como la ciudad de David?",a:["Jerusalén","Belén","Nazaret","Samaria"],c:1},
+{q:"¿Quién encontró a Jesús en el templo cuando era niño?",a:["María y José","Pedro y Juan","Marta y María","Los Reyes Magos"],c:0},
+{q:"¿Qué símbolo representa la paz?",a:["Espada","Paloma","Corona","Barco"],c:1},
+{q:"¿Quién ayudó a Jesús a llevar la cruz?",a:["Pedro","Simón de Cirene","José","Juan"],c:1},
+{q:"¿Dónde murió Jesús?",a:["Monte Sinaí","Gólgota","Nazaret","Belén"],c:1},
+{q:"¿Después de cuántos días resucitó Jesús?",a:["1","2","3","7"],c:2},
+{q:"¿Quién fue la primera testigo de la resurrección?",a:["María Magdalena","Pedro","Juan","Tomás"],c:0},
+{q:"¿Qué hizo Jesús antes de ascender al cielo?",a:["Bendijo a sus discípulos","Construyó una iglesia","Escribió un libro","Viajó a Roma"],c:0},
+{q:"¿Cuál es el mandamiento más importante?",a:["Amar a Dios y al prójimo","Construir templos","Ayunar siempre","Viajar"],c:0},
+{q:"¿Quién dijo: “Hágase en mí según tu palabra”?",a:["María","Marta","Sara","Ana"],c:0},
+{q:"¿Cómo fue llamado Jesús antes de nacer?",a:["Mesías","Salvador","Hijo de Dios","Todas las anteriores"],c:3},
+{q:"¿Qué nos enseñó Jesús principalmente?",a:["Amor","Venganza","Riqueza","Poder"],c:0}
+];
+
+const questionsPerDay=5;
+const today=new Date().toDateString();
+let firstDate=localStorage.getItem("quiz_first_date");
+if(!firstDate){localStorage.setItem("quiz_first_date",today);firstDate=today}
+const diffDays=Math.floor((new Date(today)-new Date(firstDate))/(1000*60*60*24));
+let currentDay=Math.min(diffDays+1,6);
+document.getElementById("day").textContent=currentDay;
+document.getElementById("streakDays").textContent=currentDay;
+
+const startIndex=(currentDay-1)*questionsPerDay;
+const availableQuestions=questions.slice(startIndex,startIndex+questionsPerDay);
+let current=0,score=0;
+const questionEl=document.getElementById("question"),answersEl=document.getElementById("answers"),feedback=document.getElementById("feedback"),progress=document.getElementById("progress"),scoreEl=document.getElementById("score");
+
+function loadQuestion(){
+ if(current>=availableQuestions.length){
+  document.getElementById("quiz").style.display="none";
+  document.getElementById("endScreen").style.display="block";
+  document.getElementById("finalScore").innerHTML=`Has obtenido <strong>${score}</strong> puntos hoy.<br><br>🔥 Tu racha continúa.`;
+  return;
+ }
+ const q=availableQuestions[current];
+ questionEl.textContent=q.q;answersEl.innerHTML="";feedback.innerHTML="";
+ q.a.forEach((answer,index)=>{const btn=document.createElement("button");btn.textContent=answer;btn.onclick=()=>checkAnswer(btn,index);answersEl.appendChild(btn)});
+ progress.style.width=((current)/availableQuestions.length)*100+"%";
+}
+function checkAnswer(button,selected){
+ const q=availableQuestions[current];
+ const allButtons=answersEl.querySelectorAll("button");
+ allButtons.forEach(b=>b.disabled=true);
+ if(selected===q.c){score+=10;scoreEl.textContent=score;button.classList.add("correct");feedback.innerHTML="✅ ¡Correcto!";launchConfetti()}
+ else{button.classList.add("wrong");allButtons[q.c].classList.add("correct");feedback.innerHTML=`❌ Respuesta correcta: <strong>${q.a[q.c]}</strong>`}
+ setTimeout(()=>{current++;progress.style.width=((current)/availableQuestions.length)*100+"%";loadQuestion()},1700);
+}
+function launchConfetti(){for(let i=0;i<35;i++){const c=document.createElement("div");c.classList.add("confetti");c.style.left=Math.random()*100+"vw";c.style.background=`hsl(${Math.random()*360},100%,50%)`;c.style.borderRadius=Math.random()>.5?"50%":"2px";document.body.appendChild(c);setTimeout(()=>c.remove(),3000)}}
+function restartQuiz(){current=0;score=0;scoreEl.textContent="0";document.getElementById("quiz").style.display="block";document.getElementById("endScreen").style.display="none";loadQuestion()}
+loadQuestion();
+</script>
+</body>
+</html>
