@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Quiz Bíblico — Camino Con Jesús</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #4A90D9;
+    --sky-light: #EAF4FF;
+    --sky-dark: #2C6FAC;
+    --sun: #FFB830;
+    --sun-light: #FFF4D6;
+    --green: #4CAF7D;
+    --green-light: #E8F7EF;
+    --pink: #F06292;
+    --pink-light: #FDE8F0;
+    --purple: #9C6DD8;
+    --purple-light: #F0E8FF;
+    --peach: #FF7043;
+    --peach-light: #FFF0EB;
+    --red: #E53935;
+    --red-light: #FFEBEE;
+    --cream: #FFFDF7;
+    --white: #FFFFFF;
+    --ink: #2D2D2D;
+    --ink-soft: #555;
+    --ink-muted: #999;
+    --border: #E8E8E8;
+    --radius: 20px;
+    --radius-lg: 28px;
+    --radius-xl: 36px;
+    --font: 'Nunito', 'Arial Rounded MT Bold', sans-serif;
+    --tap: 56px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    width: 100%; max-width: 480px;
+    margin: 0 auto;
+    background: var(--cream);
+    font-family: var(--font);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--sky);
+    padding: 14px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(74,144,217,0.25);
+  }
+  .header-logo { font-size: 18px; font-weight: 900; color: white; line-height: 1.2; }
+  .header-logo span { display: block; font-size: 11px; font-weight: 600; opacity: 0.85; letter-spacing: 0.04em; }
+  .header-stars {
+    font-size: 13px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 12px;
+    color: white;
+    font-weight: 700;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(180deg, var(--sky) 0%, #6BAED6 100%);
+    padding: 20px 20px 28px;
+    text-align: center;
+  }
+  .hero-emoji { font-size: 36px; margin-bottom: 6px; }
+  .hero-title { font-size: 24px; font-weight: 900; color: white; margin-bottom: 4px; }
+  .hero-sub { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 16px; }
+
+  /* ── CATEGORY TABS ── */
+  .cat-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 4px;
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-btn {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .cat-btn.active { background: white; border-color: white; color: var(--sky-dark); }
+
+  /* ── TABS BAR ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    padding: 14px 16px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 0 0 auto;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 2px solid var(--border);
+    background: white;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { background: var(--sky); border-color: var(--sky); color: white; }
+
+  /* ── SCROLL AREA ── */
+  .scroll-area { padding-bottom: 30px; }
+
+  /* ── SECTION ── */
+  .section {
+    margin: 16px 16px 0;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 18px 16px;
+    border: 2px solid var(--border);
+  }
+  .section-title {
+    font-size: 16px; font-weight: 900; color: var(--ink);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .ico { font-size: 20px; }
+
+  /* ── DIFFICULTY SELECTOR ── */
+  .diff-row { display: flex; gap: 8px; }
+  .diff-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: var(--radius);
+    border: 2.5px solid var(--border);
+    background: var(--cream);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink-soft);
+    cursor: pointer;
+    touch-action: manipulation;
+    text-align: center;
+    transition: all 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .diff-btn .d-icon { font-size: 22px; }
+  .diff-btn.selected-easy { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .diff-btn.selected-medio { background: var(--sun-light); border-color: var(--sun); color: #B8860B; }
+  .diff-btn.selected-dificil { background: var(--pink-light); border-color: var(--pink); color: var(--pink); }
+  .diff-btn:active { transform: scale(0.96); }
+
+  /* ── START BUTTON ── */
+  .start-btn {
+    width: 100%;
+    height: var(--tap);
+    background: var(--sun);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 17px;
+    font-weight: 900;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform 0.1s;
+    letter-spacing: 0.01em;
+    margin-top: 12px;
+  }
+  .start-btn:active { transform: scale(0.97); }
+
+  /* ── QUIZ SCREEN ── */
+  .quiz-screen { display: none; }
+  .quiz-hero {
+    background: linear-gradient(180deg, var(--sky) 0%, #6BAED6 100%);
+    padding: 16px 20px 20px;
+  }
+  .quiz-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50px;
+    padding: 6px 14px;
+    color: white;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .quiz-counter {
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 14px;
+  }
+  .quiz-score-badge {
+    font-size: 13px; font-weight: 700;
+    color: white;
+    background: rgba(255,184,48,0.35);
+    border-radius: 20px;
+    padding: 6px 14px;
+  }
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--sun);
+    border-radius: 20px;
+    transition: width 0.4s ease;
+  }
+  .timer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .timer-icon { font-size: 18px; }
+  .timer-bar-wrap {
+    flex: 1;
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .timer-bar-fill {
+    height: 100%;
+    background: white;
+    border-radius: 20px;
+    transition: width 0.1s linear;
+  }
+  .timer-text {
+    font-size: 15px; font-weight: 900;
+    color: white;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* ── QUESTION CARD ── */
+  .question-card {
+    margin: 16px 16px 0;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 22px 18px;
+    border: 2px solid var(--border);
+    text-align: center;
+  }
+  .question-cat-badge {
+    display: inline-block;
+    background: var(--sky-light);
+    color: var(--sky-dark);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .question-emoji { font-size: 40px; margin-bottom: 10px; }
+  .question-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
+  /* ── ANSWER OPTIONS ── */
+  .options-grid {
+    margin: 12px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-btn {
+    width: 100%;
+    min-height: var(--tap);
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    border: 2.5px solid var(--border);
+    background: white;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    touch-action: manipulation;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.15s;
+    line-height: 1.35;
+  }
+  .option-btn:active { transform: scale(0.98); }
+  .option-letter {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--sky-light);
+    color: var(--sky-dark);
+    font-size: 13px;
+    font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .option-btn.correct { background: var(--green-light); border-color: var(--green); }
+  .option-btn.correct .option-letter { background: var(--green); color: white; }
+  .option-btn.wrong { background: var(--red-light); border-color: var(--red); }
+  .option-btn.wrong .option-letter { background: var(--red); color: white; }
+  .option-btn.disabled { opacity: 0.55; pointer-events: none; }
+
+  /* ── FEEDBACK CARD ── */
+  .feedback-card {
+    margin: 12px 16px 0;
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    display: none;
+    border: 2px solid;
+  }
+  .feedback-card.correct-fb { background: var(--green-light); border-color: var(--green); }
+  .feedback-card.wrong-fb { background: var(--red-light); border-color: var(--red); }
+  .feedback-top {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .feedback-icon { font-size: 28px; }
+  .feedback-title { font-size: 17px; font-weight: 900; }
+  .feedback-title.correct-fb { color: var(--green); }
+  .feedback-title.wrong-fb { color: var(--red); }
+  .feedback-verse {
+    font-size: 13px; font-weight: 600;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    font-style: italic;
+  }
+  .next-btn {
+    width: 100%;
+    height: var(--tap);
+    background: var(--sky);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    touch-action: manipulation;
+    margin-top: 10px;
+    transition: transform 0.1s;
+  }
+  .next-btn:active { transform: scale(0.97); }
+
+  /* ── RESULT SCREEN ── */
+  .result-screen {
+    display: none;
+    padding: 24px 16px 40px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 72px; margin-bottom: 8px; }
+  .result-title { font-size: 28px; font-weight: 900; color: var(--ink); margin-bottom: 6px; }
+  .result-sub { font-size: 15px; font-weight: 600; color: var(--ink-muted); margin-bottom: 24px; line-height: 1.5; }
+  .result-score-box {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .result-big { font-size: 56px; font-weight: 900; color: var(--sky); line-height: 1; }
+  .result-of { font-size: 14px; font-weight: 700; color: var(--ink-muted); margin-top: 4px; }
+  .result-stars { font-size: 32px; margin: 12px 0; }
+  .result-msg { font-size: 15px; font-weight: 700; color: var(--ink-soft); }
+
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    flex: 1;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .stat-num { font-size: 24px; font-weight: 900; }
+  .stat-num.c { color: var(--green); }
+  .stat-num.w { color: var(--red); }
+  .stat-num.t { color: var(--purple); }
+  .stat-label { font-size: 11px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+  .result-btn {
+    width: 100%;
+    height: var(--tap);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    touch-action: manipulation;
+    margin-bottom: 10px;
+    transition: transform 0.1s;
+  }
+  .result-btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--sky); color: white; }
+  .btn-secondary { background: var(--sun-light); color: var(--peach); border: 2px solid var(--sun) !important; }
+
+  /* ── HISTORIAL TAB ── */
+  .hist-card {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .hist-icon { font-size: 32px; flex-shrink: 0; }
+  .hist-info { flex: 1; }
+  .hist-title { font-size: 15px; font-weight: 800; color: var(--ink); }
+  .hist-meta { font-size: 12px; font-weight: 600; color: var(--ink-muted); margin-top: 2px; }
+  .hist-score {
+    font-size: 18px; font-weight: 900;
+    color: var(--sky);
+    text-align: right;
+  }
+  .hist-score span { display: block; font-size: 11px; font-weight: 700; color: var(--ink-muted); }
+
+  .empty {
+    text-align: center; padding: 48px 20px;
+    color: var(--ink-muted);
+  }
+  .empty .e-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty p { font-size: 15px; font-weight: 600; line-height: 1.5; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--ink);
+    color: white;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 300;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes pop { 0%{transform:scale(0.7)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .anim-pop { animation: pop 0.35s ease; }
+  .anim-shake { animation: shake 0.35s ease; }
+
+  @keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(60px) rotate(360deg); opacity: 0; }
+  }
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 500;
+    animation: confetti-fall 0.8s ease forwards;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ HOME SCREEN ══════════════════════════════════ -->
+<div id="homeScreen">
+  <header class="header">
+    <div class="header-logo">
+      📖 Quiz Bíblico
+      <span>Camino Con Jesús</span>
+    </div>
+    <div class="header-stars" id="starBadge">⭐ 0</div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-emoji">🏆</div>
+    <div class="hero-title">¡Quiz Bíblico!</div>
+    <div class="hero-sub">Pon a prueba lo que sabes de la Biblia</div>
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-btn active" onclick="selectCat(this,'todas')">✨ Todas</button>
+      <button class="cat-btn" onclick="selectCat(this,'genesis')">🌍 Génesis</button>
+      <button class="cat-btn" onclick="selectCat(this,'jesus')">✝️ Jesús</button>
+      <button class="cat-btn" onclick="selectCat(this,'salmos')">🎵 Salmos</button>
+      <button class="cat-btn" onclick="selectCat(this,'heroes')">⚔️ Héroes</button>
+      <button class="cat-btn" onclick="selectCat(this,'milagros')">✨ Milagros</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('jugar', this)">🎮 Jugar</button>
+    <button class="tab-btn" onclick="switchTab('historial', this)">📊 Mis resultados</button>
+  </div>
+
+  <!-- TAB JUGAR -->
+  <div id="tab-jugar" class="scroll-area">
+    <div class="section" style="margin-top:16px;">
+      <div class="section-title"><span class="ico">⚡</span> Dificultad</div>
+      <div class="diff-row">
+        <button class="diff-btn selected-easy" onclick="selectDiff(this,'facil')">
+          <span class="d-icon">😊</span> Fácil
+        </button>
+        <button class="diff-btn" onclick="selectDiff(this,'medio')">
+          <span class="d-icon">🤔</span> Medio
+        </button>
+        <button class="diff-btn" onclick="selectDiff(this,'dificil')">
+          <span class="d-icon">🔥</span> Difícil
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="ico">🎯</span> Preguntas</div>
+      <div class="diff-row">
+        <button class="diff-btn" id="q5btn" onclick="selectQty(this,5)"><span class="d-icon">5️⃣</span> 5</button>
+        <button class="diff-btn selected-easy" id="q10btn" onclick="selectQty(this,10)"><span class="d-icon">🔟</span> 10</button>
+        <button class="diff-btn" id="q15btn" onclick="selectQty(this,15)"><span class="d-icon">💯</span> 15</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="ico">🏅</span> Mis puntos totales</div>
+      <div style="text-align:center; padding: 8px 0;">
+        <div style="font-size:42px; font-weight:900; color:var(--sky);" id="totalPointsDisplay">0</div>
+        <div style="font-size:13px; font-weight:700; color:var(--ink-muted);">puntos acumulados</div>
+        <div style="margin-top:10px; font-size:13px; font-weight:600; color:var(--ink-soft);" id="rankLabel">¡Empieza tu primer quiz! 🌟</div>
+      </div>
+    </div>
+
+    <div style="margin: 16px 16px 0;">
+      <button class="start-btn" onclick="startQuiz()">¡Empezar Quiz! 🚀</button>
+    </div>
+  </div>
+
+  <!-- TAB HISTORIAL -->
+  <div id="tab-historial" class="scroll-area" style="display:none; padding: 16px 16px 30px;">
+    <div id="historialWrap"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ QUIZ SCREEN ══════════════════════════════════ -->
+<div id="quizScreen" class="quiz-screen">
+  <div class="quiz-hero">
+    <div class="quiz-top-row">
+      <button class="back-btn" onclick="confirmBack()">← Salir</button>
+      <div class="quiz-counter" id="quizCounter">1 / 10</div>
+      <div class="quiz-score-badge" id="quizScoreBadge">⭐ 0</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="timer-row">
+      <span class="timer-icon">⏱️</span>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar-fill" id="timerFill" style="width:100%"></div>
+      </div>
+      <span class="timer-text" id="timerText">15</span>
+    </div>
+  </div>
+
+  <div class="question-card" id="questionCard">
+    <div class="question-cat-badge" id="questionCat">Génesis</div>
+    <div class="question-emoji" id="questionEmoji">📖</div>
+    <div class="question-text" id="questionText">¿Pregunta aquí?</div>
+  </div>
+
+  <div class="options-grid" id="optionsGrid"></div>
+
+  <div class="feedback-card" id="feedbackCard">
+    <div class="feedback-top">
+      <span class="feedback-icon" id="feedbackIcon">✅</span>
+      <span class="feedback-title" id="feedbackTitle">¡Correcto!</span>
+    </div>
+    <p class="feedback-verse" id="feedbackVerse"></p>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ RESULT SCREEN ══════════════════════════════════ -->
+<div id="resultScreen" class="result-screen">
+  <div class="result-emoji" id="resultEmoji">🎉</div>
+  <div class="result-title" id="resultTitle">¡Excelente!</div>
+  <div class="result-sub" id="resultSub">¡Conoces muy bien la Biblia!</div>
+
+  <div class="result-score-box">
+    <div class="result-big" id="resultScore">8</div>
+    <div class="result-of" id="resultOf">de 10 correctas</div>
+    <div class="result-stars" id="resultStars">⭐⭐⭐</div>
+    <div class="result-msg" id="resultMsg">¡Sigue así, campeón bíblico!</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-num c" id="statCorrect">0</div>
+      <div class="stat-label">✅ Correctas</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num w" id="statWrong">0</div>
+      <div class="stat-label">❌ Incorrectas</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num t" id="statPoints">0</div>
+      <div class="stat-label">⭐ Puntos</div>
+    </div>
+  </div>
+
+  <button class="result-btn btn-primary" onclick="startQuiz()">🔄 Jugar de nuevo</button>
+  <button class="result-btn btn-secondary" onclick="goHome()">🏠 Ir al inicio</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// BANCO DE PREGUNTAS — 60 preguntas, 6 categorías
+// ══════════════════════════════════════════════════════
+const ALL_QUESTIONS = [
+  // ── GÉNESIS ──
+  {cat:'genesis', emoji:'🌍', diff:'facil', q:'¿Cuántos días tardó Dios en crear el mundo?', opts:['5 días','6 días','7 días','10 días'], a:1, verse:'Génesis 1:31 — "Y vio Dios todo lo que había hecho, y era muy bueno."'},
+  {cat:'genesis', emoji:'🍎', diff:'facil', q:'¿Qué fruta le dio Eva a Adán en el jardín del Edén?', opts:['Un mango','Una naranja','Un fruto prohibido','Una manzana'], a:2, verse:'Génesis 3:6 — "Y tomó de su fruto y comió."'},
+  {cat:'genesis', emoji:'🌈', diff:'facil', q:'¿Qué señal puso Dios en el cielo después del diluvio?', opts:['Una estrella','Un arcoíris','Una nube','El sol'], a:1, verse:'Génesis 9:13 — "Puse mi arco en las nubes, el cual será por señal del pacto."'},
+  {cat:'genesis', emoji:'⛵', diff:'facil', q:'¿Quién construyó el arca para salvar a su familia del diluvio?', opts:['Abraham','Moisés','Noé','David'], a:2, verse:'Génesis 6:14 — "Hazte un arca de madera de gofer."'},
+  {cat:'genesis', emoji:'⭐', diff:'medio', q:'¿Cuántos hijos tuvo Jacob?', opts:['10','11','12','13'], a:2, verse:'Génesis 35:22 — "Los hijos de Jacob fueron doce."'},
+  {cat:'genesis', emoji:'🧥', diff:'medio', q:'¿Qué regalo especial le dio Jacob a José?', opts:['Un caballo','Una túnica de muchos colores','Una espada','Una corona'], a:1, verse:'Génesis 37:3 — "Y le hizo una túnica de diversos colores."'},
+  {cat:'genesis', emoji:'🌟', diff:'medio', q:'¿Qué interpretó José en Egipto que le hizo famoso?', opts:['Visiones','Sueños','Profecías','Señales'], a:1, verse:'Génesis 41:15 — "He oído de ti que puedes entender sueños."'},
+  {cat:'genesis', emoji:'🏗️', diff:'dificil', q:'¿Cómo se llamaba el lugar donde construyeron la torre para llegar al cielo?', opts:['Babel','Nínive','Egipto','Canaán'], a:0, verse:'Génesis 11:9 — "Por eso fue llamado el nombre de ella Babel."'},
+  {cat:'genesis', emoji:'🐏', diff:'dificil', q:'¿Qué animal apareció para salvar a Isaac cuando Abraham iba a sacrificarlo?', opts:['Un toro','Un cordero','Un carnero','Una paloma'], a:2, verse:'Génesis 22:13 — "Alzó Abraham sus ojos y vio un carnero trabado por sus cuernos."'},
+  {cat:'genesis', emoji:'🌾', diff:'dificil', q:'¿Cuántos años de hambre soñó el faraón que vendrían?', opts:['5','7','10','3'], a:1, verse:'Génesis 41:27 — "Las siete vacas flacas y las siete espigas menudas son siete años de hambre."'},
+
+  // ── JESÚS ──
+  {cat:'jesus', emoji:'⭐', diff:'facil', q:'¿En qué ciudad nació Jesús?', opts:['Nazaret','Jerusalén','Belén','Jericó'], a:2, verse:'Lucas 2:11 — "Os ha nacido hoy, en la ciudad de David, un Salvador."'},
+  {cat:'jesus', emoji:'🕊️', diff:'facil', q:'¿Quién bautizó a Jesús?', opts:['Pedro','Pablo','Juan el Bautista','Moisés'], a:2, verse:'Mateo 3:13 — "Entonces Jesús vino de Galilea a Juan al Jordán para ser bautizado."'},
+  {cat:'jesus', emoji:'🐟', diff:'facil', q:'¿Qué usó Jesús para alimentar a más de 5000 personas?', opts:['Pan y vino','5 panes y 2 peces','10 panes y 5 peces','Maná del cielo'], a:1, verse:'Juan 6:9 — "Hay aquí un muchacho que tiene cinco panes de cebada y dos pececillos."'},
+  {cat:'jesus', emoji:'💦', diff:'facil', q:'¿Cuál fue el primer milagro de Jesús?', opts:['Sanar a un ciego','Resucitar a Lázaro','Convertir agua en vino','Caminar sobre el agua'], a:2, verse:'Juan 2:11 — "Este principio de señales hizo Jesús en Caná de Galilea."'},
+  {cat:'jesus', emoji:'🏔️', diff:'medio', q:'¿Cuántos días estuvo Jesús en el desierto siendo tentado?', opts:['20','30','40','50'], a:2, verse:'Mateo 4:2 — "Y después de haber ayunado cuarenta días y cuarenta noches."'},
+  {cat:'jesus', emoji:'🌊', diff:'medio', q:'¿Sobre qué caminó Jesús para llegar a sus discípulos?', opts:['La arena','El agua','Las nubes','Las piedras'], a:1, verse:'Mateo 14:25 — "Mas en la cuarta vigilia de la noche, Jesús fue a ellos andando sobre el mar."'},
+  {cat:'jesus', emoji:'🌿', diff:'medio', q:'¿Cuántos discípulos tenía Jesús?', opts:['10','11','12','13'], a:2, verse:'Marcos 3:14 — "Y estableció a doce para que estuviesen con él."'},
+  {cat:'jesus', emoji:'🗿', diff:'dificil', q:'¿Cuántos días estuvo Jesús en el sepulcro antes de resucitar?', opts:['1','2','3','7'], a:2, verse:'Lucas 24:7 — "El Hijo del Hombre debe ser entregado... y al tercer día resucitar."'},
+  {cat:'jesus', emoji:'🎄', diff:'dificil', q:'¿Cómo se llamaba el árbol en el que subió Zaqueo para ver a Jesús?', opts:['Olivo','Higuera','Sicómoro','Cedro'], a:2, verse:'Lucas 19:4 — "Corrió delante y subió a un árbol sicómoro para verle."'},
+  {cat:'jesus', emoji:'🐴', diff:'dificil', q:'¿En qué animal entró Jesús a Jerusalén?', opts:['Camello','Caballo blanco','Burro','Mula'], a:2, verse:'Mateo 21:7 — "Trajeron el asno y el pollino, y pusieron sobre ellos sus mantos."'},
+
+  // ── SALMOS ──
+  {cat:'salmos', emoji:'🐑', diff:'facil', q:'En el Salmo 23, ¿qué es el Señor para nosotros?', opts:['Nuestro Rey','Nuestro Pastor','Nuestro Maestro','Nuestro Padre'], a:1, verse:'Salmos 23:1 — "El Señor es mi pastor; nada me faltará."'},
+  {cat:'salmos', emoji:'❤️', diff:'facil', q:'¿Qué dice Salmos 46:1 que es Dios?', opts:['Nuestro juez','Nuestro refugio y fortaleza','Nuestro creador','Nuestro guerrero'], a:1, verse:'Salmos 46:1 — "Dios es nuestro refugio y fortaleza, nuestro pronto auxilio en las tribulaciones."'},
+  {cat:'salmos', emoji:'🌟', diff:'facil', q:'¿Quién escribió la mayoría de los Salmos?', opts:['Moisés','Salomón','David','Abraham'], a:2, verse:'Salmos 72:20 — "Aquí terminan las oraciones de David hijo de Isaí."'},
+  {cat:'salmos', emoji:'🎵', diff:'medio', q:'¿Cuántos salmos hay en la Biblia?', opts:['100','120','150','200'], a:2, verse:'El libro de los Salmos contiene 150 salmos.'},
+  {cat:'salmos', emoji:'☀️', diff:'medio', q:'¿Qué dice el Salmo 118:24 sobre el día?', opts:['Es día de descanso','Es día que hizo el Señor y nos alegraremos','Es día de oración','Es día de ayuno'], a:1, verse:'Salmos 118:24 — "Este es el día que hizo el Señor; nos gozaremos y alegraremos en él."'},
+  {cat:'salmos', emoji:'💪', diff:'medio', q:'Según Salmos 27:1, ¿qué es Dios para nosotros?', opts:['Nuestro guía','Nuestra paz','Nuestra luz y salvación','Nuestro escudo'], a:2, verse:'Salmos 27:1 — "El Señor es mi luz y mi salvación; ¿a quién temeré?"'},
+  {cat:'salmos', emoji:'🎶', diff:'dificil', q:'¿Cuál es el salmo más largo de la Biblia?', opts:['Salmos 23','Salmos 91','Salmos 119','Salmos 150'], a:2, verse:'Salmos 119 es el salmo más largo con 176 versículos.'},
+  {cat:'salmos', emoji:'🌙', diff:'dificil', q:'¿Cuál es el salmo más corto de la Biblia?', opts:['Salmos 1','Salmos 117','Salmos 23','Salmos 100'], a:1, verse:'Salmos 117 es el salmo más corto con solo 2 versículos.'},
+  {cat:'salmos', emoji:'🦅', diff:'dificil', q:'Según Salmos 91:4, ¿con qué nos cubre Dios?', opts:['Su mano','Sus alas','Su amor','Su luz'], a:1, verse:'Salmos 91:4 — "Con sus plumas te cubrirá, y debajo de sus alas estarás seguro."'},
+  {cat:'salmos', emoji:'🙌', diff:'medio', q:'¿Qué dice el Salmo 150:6 que debe hacer todo lo que respira?', opts:['Orar','Ayunar','Alabar al Señor','Cantar'], a:2, verse:'Salmos 150:6 — "Todo lo que respira alabe al Señor. ¡Aleluya!"'},
+
+  // ── HÉROES BÍBLICOS ──
+  {cat:'heroes', emoji:'🦁', diff:'facil', q:'¿Quién fue echado al foso de los leones?', opts:['Pedro','Elías','Daniel','Moisés'], a:2, verse:'Daniel 6:16 — "Entonces el rey mandó, y trajeron a Daniel, y le echaron en el foso de los leones."'},
+  {cat:'heroes', emoji:'🌊', diff:'facil', q:'¿Quién separó las aguas del Mar Rojo?', opts:['Josué','David','Abraham','Moisés'], a:3, verse:'Éxodo 14:21 — "Y extendió Moisés su mano sobre el mar, y el Señor hizo que el mar se retirase."'},
+  {cat:'heroes', emoji:'🗡️', diff:'facil', q:'¿A qué gigante mató David con una honda?', opts:['Goliat','Sansón','Og','Adán'], a:0, verse:'1 Samuel 17:50 — "Así venció David al filisteo con honda y pedrada."'},
+  {cat:'heroes', emoji:'🐋', diff:'facil', q:'¿Quién estuvo tres días dentro de un gran pez?', opts:['Elías','Jonás','Noé','Ezequiel'], a:1, verse:'Jonás 1:17 — "Preparó el Señor un gran pez que tragase a Jonás, y estuvo en el vientre del pez tres días y tres noches."'},
+  {cat:'heroes', emoji:'💈', diff:'medio', q:'¿De dónde venía la fuerza sobrenatural de Sansón?', opts:['Sus músculos','Su cabello','Su fe','Su espada'], a:1, verse:'Jueces 16:17 — "Si fuere rapado, mi fuerza se apartará de mí."'},
+  {cat:'heroes', emoji:'🏹', diff:'medio', q:'¿Cuántos años tenía David cuando mató a Goliat?', opts:['10','15','17','20'], a:2, verse:'1 Samuel 17 — David era joven, un muchacho de aproximadamente 17 años.'},
+  {cat:'heroes', emoji:'🔥', diff:'medio', q:'¿En qué fue llevado Elías al cielo?', opts:['Una nube','Un torbellino de fuego','Un carro de fuego','Un ángel'], a:2, verse:'2 Reyes 2:11 — "Un carro de fuego con caballos de fuego apartó a los dos; y Elías subió al cielo en un torbellino."'},
+  {cat:'heroes', emoji:'👑', diff:'dificil', q:'¿Cuántas esposas tuvo el rey Salomón?', opts:['300','500','700','1000'], a:2, verse:'1 Reyes 11:3 — "Y tuvo setecientas mujeres reinas y trescientas concubinas."'},
+  {cat:'heroes', emoji:'🌙', diff:'dificil', q:'¿Quién hizo que el sol y la luna se detuvieran durante una batalla?', opts:['Moisés','David','Josué','Elías'], a:2, verse:'Josué 10:13 — "Y el sol se detuvo y la luna se paró, hasta que la gente se hubo vengado de sus enemigos."'},
+  {cat:'heroes', emoji:'📜', diff:'dificil', q:'¿Cuántos años vivió Matusalén, el hombre más longevo de la Biblia?', opts:['850','900','950','969'], a:3, verse:'Génesis 5:27 — "Y fueron todos los días de Matusalén novecientos sesenta y nueve años."'},
+
+  // ── MILAGROS ──
+  {cat:'milagros', emoji:'👁️', diff:'facil', q:'¿Qué hizo Jesús con el agua en la boda de Caná?', opts:['La multiplicó','La convirtió en vino','La bendijo','La purificó'], a:1, verse:'Juan 2:9 — "El agua se había convertido en vino."'},
+  {cat:'milagros', emoji:'🧑‍🦯', diff:'facil', q:'¿Qué sanó Jesús en muchas personas durante su ministerio?', opts:['Solo la fiebre','Solo la lepra','Toda clase de enfermedades','Solo la ceguera'], a:2, verse:'Mateo 4:23 — "Sanando toda enfermedad y toda dolencia en el pueblo."'},
+  {cat:'milagros', emoji:'🌾', diff:'facil', q:'¿Cuántas personas comieron con solo 5 panes y 2 peces?', opts:['1000','3000','5000','7000'], a:2, verse:'Mateo 14:21 — "Y los que comieron fueron como cinco mil hombres."'},
+  {cat:'milagros', emoji:'💀', diff:'medio', q:'¿A quién resucitó Jesús después de 4 días muerto?', opts:['Jairo','Lázaro','Esteban','Tabita'], a:1, verse:'Juan 11:43 — "Habiendo dicho esto, clamó a gran voz: ¡Lázaro, ven fuera!"'},
+  {cat:'milagros', emoji:'🌊', diff:'medio', q:'¿Qué hizo Pedro cuando vio a Jesús caminar sobre el agua?', opts:['Se escondió','Gritó de miedo','También intentó caminar sobre el agua','Saltó al mar'], a:2, verse:'Mateo 14:29 — "Y descendiendo Pedro de la barca, andaba sobre las aguas para ir a Jesús."'},
+  {cat:'milagros', emoji:'🌿', diff:'medio', q:'¿Qué le pasó a la higuera cuando Jesús la maldijo?', opts:['No pasó nada','Dio más frutos','Se secó','Floreció'], a:2, verse:'Mateo 21:19 — "Y luego se secó la higuera."'},
+  {cat:'milagros', emoji:'🐟', diff:'dificil', q:'¿Cuántas canastas sobraron después de la multiplicación de los panes?', opts:['5','10','12','7'], a:2, verse:'Mateo 14:20 — "Y recogieron lo que sobró de los pedazos, doce cestas llenas."'},
+  {cat:'milagros', emoji:'⚡', diff:'dificil', q:'¿Qué milagro hizo Elías en el Monte Carmelo?', opts:['Resucitó a un niño','Hizo llover','Hizo bajar fuego del cielo','Separó el río'], a:2, verse:'1 Reyes 18:38 — "Entonces cayó fuego del Señor, y consumió el holocausto."'},
+  {cat:'milagros', emoji:'🎋', diff:'dificil', q:'¿En qué se convirtió la vara de Aarón cuando la tiró ante el faraón?', opts:['Un árbol','Una serpiente','Un río','Un fuego'], a:1, verse:'Éxodo 7:10 — "Echó Aarón su vara delante de faraón y se volvió serpiente."'},
+  {cat:'milagros', emoji:'🌅', diff:'dificil', q:'¿Cuántos días estuvo Jonás dentro del gran pez?', opts:['1','2','3','7'], a:2, verse:'Jonás 1:17 — "Y estuvo Jonás en el vientre del pez tres días y tres noches."'}
+];
+
+// ══════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════
+let selectedCat = 'todas';
+let selectedDiff = 'facil';
+let selectedQty = 10;
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let answered = false;
+let timerInterval = null;
+let timeLeft = 15;
+let totalStars = 0;
+let history = [];
+
+function load() {
+  try {
+    const s = localStorage.getItem('ccj_quiz_stars'); if(s) totalStars = parseInt(s);
+    const h = localStorage.getItem('ccj_quiz_history'); if(h) history = JSON.parse(h);
+  } catch(e) {}
+}
+
+function persist() {
+  try {
+    localStorage.setItem('ccj_quiz_stars', totalStars);
+    localStorage.setItem('ccj_quiz_history', JSON.stringify(history));
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════
+function selectCat(btn, cat) {
+  selectedCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectDiff(btn, diff) {
+  selectedDiff = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    b.classList.remove('selected-easy','selected-medio','selected-dificil');
+  });
+  btn.classList.add('selected-' + diff);
+}
+
+function selectQty(btn, qty) {
+  selectedQty = qty;
+  ['q5btn','q10btn','q15btn'].forEach(id => {
+    document.getElementById(id).classList.remove('selected-easy','selected-medio','selected-dificil');
+  });
+  btn.classList.add('selected-easy');
+}
+
+function switchTab(tab, btn) {
+  ['jugar','historial'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display = 'block';
+  btn.classList.add('active');
+  if(tab === 'historial') renderHistorial();
+}
+
+function updateHomeStars() {
+  document.getElementById('starBadge').textContent = '⭐ ' + totalStars;
+  document.getElementById('totalPointsDisplay').textContent = totalStars;
+  const labels = [
+    [0,'¡Empieza tu primer quiz! 🌟'],
+    [10,'¡Principiante bíblico! 📖'],
+    [30,'¡Explorador de la Biblia! 🔍'],
+    [60,'¡Conocedor bíblico! 💪'],
+    [100,'¡Héroe de la Biblia! ⚔️'],
+    [150,'¡Campeón bíblico! 🏆'],
+    [200,'¡Sabio de Dios! 👑']
+  ];
+  let label = labels[0][1];
+  for(let [pts, lbl] of labels) { if(totalStars >= pts) label = lbl; }
+  document.getElementById('rankLabel').textContent = label;
+}
+
+// ══════════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════════
+function startQuiz() {
+  let pool = ALL_QUESTIONS.filter(q => {
+    const catOk = selectedCat === 'todas' || q.cat === selectedCat;
+    const diffOk = q.diff === selectedDiff;
+    return catOk && diffOk;
+  });
+
+  if(pool.length < selectedQty) {
+    // Si no hay suficientes, mezclar dificultades
+    pool = ALL_QUESTIONS.filter(q => selectedCat === 'todas' || q.cat === selectedCat);
+  }
+
+  // Shuffle
+  pool = pool.sort(() => Math.random() - 0.5);
+  currentQuestions = pool.slice(0, Math.min(selectedQty, pool.length));
+
+  if(currentQuestions.length === 0) {
+    showToast('¡No hay preguntas disponibles! Cambia la categoría.');
+    return;
+  }
+
+  currentIndex = 0;
+  score = 0;
+  correctCount = 0;
+  wrongCount = 0;
+
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  document.getElementById('resultScreen').style.display = 'none';
+
+  showQuestion();
+}
+
+function getTimerSeconds() {
+  return selectedDiff === 'facil' ? 20 : selectedDiff === 'medio' ? 15 : 10;
+}
+
+function showQuestion() {
+  answered = false;
+  const q = currentQuestions[currentIndex];
+  const total = currentQuestions.length;
+
+  document.getElementById('quizCounter').textContent = (currentIndex+1) + ' / ' + total;
+  document.getElementById('quizScoreBadge').textContent = '⭐ ' + score;
+  document.getElementById('progressFill').style.width = ((currentIndex/total)*100) + '%';
+  document.getElementById('questionCat').textContent = catLabel(q.cat);
+  document.getElementById('questionEmoji').textContent = q.emoji;
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('feedbackCard').style.display = 'none';
+
+  // Shuffle options preserving correct answer
+  const letters = ['A','B','C','D'];
+  const indices = [0,1,2,3].sort(() => Math.random()-0.5);
+  const shuffled = indices.map(i => q.opts[i]);
+  const newCorrect = indices.indexOf(q.a);
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  shuffled.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = '<span class="option-letter">'+letters[i]+'</span>' + opt;
+    btn.onclick = () => selectAnswer(btn, i, newCorrect, q);
+    grid.appendChild(btn);
+  });
+
+  // Timer
+  clearInterval(timerInterval);
+  timeLeft = getTimerSeconds();
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if(timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if(!answered) timeUp(newCorrect, q);
+    }
+  }, 1000);
+
+  // Animate question
+  const card = document.getElementById('questionCard');
+  card.classList.remove('anim-pop');
+  void card.offsetWidth;
+  card.classList.add('anim-pop');
+}
+
+function updateTimerUI() {
+  const max = getTimerSeconds();
+  const pct = (timeLeft / max) * 100;
+  document.getElementById('timerFill').style.width = pct + '%';
+  document.getElementById('timerText').textContent = timeLeft;
+  const fill = document.getElementById('timerFill');
+  fill.style.background = timeLeft > max*0.5 ? 'white' : timeLeft > max*0.25 ? '#FFB830' : '#FF5252';
+}
+
+function selectAnswer(btn, selected, correct, q) {
+  if(answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach((b, i) => {
+    b.classList.add('disabled');
+    if(i === correct) b.classList.add('correct');
+    else if(i === selected && selected !== correct) b.classList.add('wrong');
+  });
+
+  const isCorrect = selected === correct;
+  showFeedback(isCorrect, q);
+
+  if(isCorrect) {
+    const pts = selectedDiff === 'facil' ? 1 : selectedDiff === 'medio' ? 2 : 3;
+    score += pts;
+    correctCount++;
+    launchConfetti(btn);
+  } else {
+    wrongCount++;
+    document.getElementById('questionCard').classList.remove('anim-shake');
+    void document.getElementById('questionCard').offsetWidth;
+    document.getElementById('questionCard').classList.add('anim-shake');
+  }
+}
+
+function timeUp(correct, q) {
+  answered = true;
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach((b, i) => {
+    b.classList.add('disabled');
+    if(i === correct) b.classList.add('correct');
+  });
+  wrongCount++;
+  showFeedback(false, q, true);
+}
+
+function showFeedback(isCorrect, q, isTimeout = false) {
+  const card = document.getElementById('feedbackCard');
+  card.className = 'feedback-card ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  card.style.display = 'block';
+
+  document.getElementById('feedbackIcon').textContent = isCorrect ? '🎉' : (isTimeout ? '⏰' : '😢');
+  const title = document.getElementById('feedbackTitle');
+  title.className = 'feedback-title ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  title.textContent = isCorrect ? '¡Correcto! 🌟' : (isTimeout ? '¡Se acabó el tiempo!' : '¡Casi! Inténtalo de nuevo');
+  document.getElementById('feedbackVerse').textContent = q.verse;
+
+  const nextBtn = document.getElementById('nextBtn');
+  const isLast = currentIndex >= currentQuestions.length - 1;
+  nextBtn.textContent = isLast ? '¡Ver resultados! 🏆' : 'Siguiente →';
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if(currentIndex >= currentQuestions.length) {
+    showResult();
+  } else {
+    showQuestion();
+  }
+}
+
+function confirmBack() {
+  clearInterval(timerInterval);
+  goHome();
+}
+
+function goHome() {
+  document.getElementById('homeScreen').style.display = 'block';
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'none';
+  updateHomeStars();
+}
+
+// ══════════════════════════════════════════════════════
+// RESULTADO
+// ══════════════════════════════════════════════════════
+function showResult() {
+  clearInterval(timerInterval);
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('homeScreen').style.display = 'none';
+
+  const total = currentQuestions.length;
+  const pct = correctCount / total;
+
+  let emoji, title, sub, stars, msg;
+  if(pct === 1)        { emoji='🏆'; title='¡Perfecto!'; sub='¡100% correcto! ¡Eres un genio bíblico!'; stars='⭐⭐⭐'; msg='¡Increíble, campeón!'; }
+  else if(pct >= 0.8)  { emoji='🎉'; title='¡Excelente!'; sub='¡Conoces muy bien la Biblia!'; stars='⭐⭐⭐'; msg='¡Sigue así, eres increíble!'; }
+  else if(pct >= 0.6)  { emoji='😊'; title='¡Muy bien!'; sub='¡Buen trabajo! Sigue aprendiendo.'; stars='⭐⭐'; msg='¡Cada día aprendes más!'; }
+  else if(pct >= 0.4)  { emoji='💪'; title='¡Buen intento!'; sub='¡Puedes hacerlo mejor, sigue estudiando!'; stars='⭐'; msg='¡La Biblia tiene muchas sorpresas!'; }
+  else                  { emoji='📖'; title='¡Sigue leyendo!'; sub='¡La práctica hace al maestro!'; stars='⭐'; msg='¡Lee más la Biblia y vuelve a intentar!'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  document.getElementById('resultScore').textContent = correctCount;
+  document.getElementById('resultOf').textContent = 'de ' + total + ' correctas';
+  document.getElementById('resultStars').textContent = stars;
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('statCorrect').textContent = correctCount;
+  document.getElementById('statWrong').textContent = wrongCount;
+  document.getElementById('statPoints').textContent = score;
+
+  // Add to history
+  totalStars += score;
+  history.unshift({
+    date: new Date().toLocaleDateString('es',{day:'numeric',month:'long'}),
+    cat: selectedCat,
+    diff: selectedDiff,
+    correct: correctCount,
+    total: total,
+    points: score
+  });
+  if(history.length > 20) history = history.slice(0,20);
+  persist();
+  updateHomeStars();
+
+  if(pct >= 0.8) setTimeout(() => bigConfetti(), 200);
+}
+
+// ══════════════════════════════════════════════════════
+// HISTORIAL
+// ══════════════════════════════════════════════════════
+function catLabel(cat) {
+  const labels = {todas:'Todas',genesis:'Génesis',jesus:'Jesús',salmos:'Salmos',heroes:'Héroes',milagros:'Milagros'};
+  return labels[cat] || cat;
+}
+
+function renderHistorial() {
+  const wrap = document.getElementById('historialWrap');
+  if(!history.length) {
+    wrap.innerHTML = '<div class="empty"><div class="e-icon">📊</div><p>¡Aún no has jugado!<br>Completa tu primer quiz 🎮</p></div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  history.forEach((h, i) => {
+    const pct = h.correct/h.total;
+    const icon = pct===1?'🏆':pct>=0.8?'🎉':pct>=0.6?'😊':'📖';
+    const div = document.createElement('div');
+    div.className = 'hist-card';
+    div.innerHTML =
+      '<div class="hist-icon">'+icon+'</div>'+
+      '<div class="hist-info">'+
+        '<div class="hist-title">'+catLabel(h.cat)+' — '+h.diff+'</div>'+
+        '<div class="hist-meta">'+h.date+' · '+h.total+' preguntas</div>'+
+      '</div>'+
+      '<div class="hist-score">'+h.correct+'/'+h.total+'<span>+'+h.points+' pts</span></div>';
+    wrap.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════════════════════
+function launchConfetti(btn) {
+  const colors = ['#FFB830','#4A90D9','#4CAF7D','#F06292','#9C6DD8'];
+  const rect = btn ? btn.getBoundingClientRect() : {left: window.innerWidth/2, top: window.innerHeight/2};
+  for(let i=0;i<8;i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${rect.left + Math.random()*rect.width}px;
+      top:${rect.top}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      transform:rotate(${Math.random()*360}deg);
+      animation-delay:${Math.random()*0.3}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
+}
+
+function bigConfetti() {
+  const colors = ['#FFB830','#4A90D9','#4CAF7D','#F06292','#9C6DD8','#FF7043'];
+  for(let i=0;i<30;i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left:${Math.random()*window.innerWidth}px;
+        top:${-10}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        width:${6+Math.random()*10}px;
+        height:${6+Math.random()*10}px;
+        animation-duration:${0.8+Math.random()*0.6}s;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1500);
+    }, i*60);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+load();
+updateHomeStars();
+</script>
+</body>
+</html>
